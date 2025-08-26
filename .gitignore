@@ -1,5 +1,9 @@
 /ci/node_modules/
+node_modules/
 /.idea
 /ci/test-results
 /docs/
 # docs must be ignored and never commited because we use this to autopublish API updates to https://airconsole.github.io/airconsole-api
+
+# Generated files that might be temporary
+tsd-jsdoc.json
