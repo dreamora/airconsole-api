@@ -1,0 +1,68 @@
+name: Generate TypeScript Declarations
+
+on:
+  push:
+    tags:
+      - 'v*'  # Trigger on release tags like v1.9.0, v1.10.0, etc.
+
+jobs:
+  generate-types:
+    name: Generate and commit TypeScript declarations
+    runs-on: ubuntu-latest
+    
+    permissions:
+      contents: write  # Allow writing to repository
+      pull-requests: write  # Allow creating/updating PRs
+      
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm install
+      
+    - name: Generate TypeScript declarations
+      run: npm run generate-types
+      
+    - name: Check for changes
+      id: verify-changed-files
+      run: |
+        if [ -n "$(git status --porcelain)" ]; then
+          echo "changed=true" >> $GITHUB_OUTPUT
+        else
+          echo "changed=false" >> $GITHUB_OUTPUT
+        fi
+        
+    - name: Commit generated files
+      if: steps.verify-changed-files.outputs.changed == 'true'
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add index.d.ts package.json
+        git commit -m "Generate TypeScript declarations for ${GITHUB_REF#refs/tags/}"
+        
+    - name: Push changes
+      if: steps.verify-changed-files.outputs.changed == 'true'
+      run: |
+        git push origin HEAD:${GITHUB_REF#refs/heads/}
+        
+    - name: Create or update npm package (optional)
+      if: steps.verify-changed-files.outputs.changed == 'true'
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      run: |
+        # Only publish if NPM_TOKEN is available
+        if [ -n "$NODE_AUTH_TOKEN" ]; then
+          echo "//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}" > ~/.npmrc
+          npm publish --access public
+        else
+          echo "NPM_TOKEN not set, skipping npm publish"
+        fi

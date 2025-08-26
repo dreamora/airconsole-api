@@ -1,0 +1,33 @@
+{
+  "name": "@airconsole/types",
+  "version": "1.9.0",
+  "description": "TypeScript declarations for AirConsole JavaScript API",
+  "main": "index.d.ts",
+  "types": "index.d.ts",
+  "scripts": {
+    "generate-types": "node scripts/generate-types-simple.js",
+    "build": "npm run generate-types"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dreamora/airconsole-api.git"
+  },
+  "keywords": [
+    "airconsole",
+    "typescript",
+    "declarations",
+    "gaming",
+    "api"
+  ],
+  "author": "N-Dream AG",
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "jsdoc": "^3.6.11",
+    "tsd-jsdoc": "^2.5.0",
+    "typescript": "^5.3.0"
+  },
+  "files": [
+    "index.d.ts",
+    "README.md"
+  ]
+}

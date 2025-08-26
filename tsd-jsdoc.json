@@ -1,0 +1,14 @@
+{
+  "plugins": [
+    "plugins/markdown"
+  ],
+  "source": {
+    "includePattern": "\\.(js|jsx)$",
+    "exclude": [
+      "node_modules/"
+    ]
+  },
+  "opts": {
+    "destination": "./"
+  }
+}
