@@ -42,31 +42,6 @@ jobs:
           echo "changed=false" >> $GITHUB_OUTPUT
         fi
         
-    - name: Create branch and commit generated files
-      if: steps.verify-changed-files.outputs.changed == 'true'
-      run: |
-        TAG_NAME=${GITHUB_REF#refs/tags/}
-        BRANCH_NAME="types-generation-${TAG_NAME}"
-        
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
-        
-        # Create new branch from current commit
-        git checkout -b $BRANCH_NAME
-        
-        # Add and commit the generated files
-        git add index.d.ts package.json .gitignore
-        git commit -m "Generate TypeScript declarations for ${TAG_NAME}"
-        
-    - name: Push changes
-      if: steps.verify-changed-files.outputs.changed == 'true'
-      run: |
-        TAG_NAME=${GITHUB_REF#refs/tags/}
-        BRANCH_NAME="types-generation-${TAG_NAME}"
-        
-        # Push the new branch
-        git push origin $BRANCH_NAME
-        
     - name: Create Pull Request
       if: steps.verify-changed-files.outputs.changed == 'true'
       uses: peter-evans/create-pull-request@v5
@@ -80,10 +55,15 @@ jobs:
           This PR includes:
           - Updated `index.d.ts` with TypeScript declarations generated from JSDoc comments
           - Updated `package.json` with new version number
-          - Updated `.gitignore` to exclude build artifacts
           
           Generated from: ${{ github.sha }}
+        commit-message: "Generate TypeScript declarations for ${{ github.ref_name }}"
+        committer: GitHub Action <action@github.com>
+        author: GitHub Action <action@github.com>
         delete-branch: true
+        add-paths: |
+          index.d.ts
+          package.json
         
     - name: Create or update npm package (optional)
       if: steps.verify-changed-files.outputs.changed == 'true'

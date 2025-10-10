@@ -27,7 +27,6 @@
     "typescript": "^5.3.0"
   },
   "files": [
-    "index.d.ts",
-    "README.md"
+    "index.d.ts"
   ]
 }
